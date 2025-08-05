@@ -1,0 +1,19 @@
+---
+layout: default
+title: Календарь
+---
+<div class="page-content">
+  <div class="wrapper">
+    <div class="post-calendar">
+      <h1 class="page-heading">Архив постов</h1>
+      <ul class="post-list">
+        {% for post in site.posts %}
+          <li>
+            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
+            <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
