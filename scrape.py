@@ -12,8 +12,10 @@ def get_top_tech_news():
         
     print("Начинаем получать новости через News API...")
     
-    query = "startup OR innovation OR AI OR machine learning OR quantum computing OR biotechnology"
-    url = f"https://newsapi.org/v2/everything?q={query}&language=en&sortBy=publishedAt&pageSize=10&apiKey={NEWS_API_KEY}"
+    # Новый, более точный запрос к API
+    # Используем конкретные источники, чтобы избежать нерелевантного контента
+    sources = "techcrunch,the-verge,ars-technica,wired,recode"
+    url = f"https://newsapi.org/v2/everything?sources={sources}&sortBy=publishedAt&pageSize=10&apiKey={NEWS_API_KEY}"
     
     try:
         response = requests.get(url)
