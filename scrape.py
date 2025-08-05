@@ -1,52 +1,36 @@
 import requests
-from bs4 import BeautifulSoup
 import os
 from datetime import date, timedelta
-import re
 
-def scrape_techcrunch():
-    """Собирает топ-10 новостей с сайта TechCrunch."""
-    print("Начинаем парсинг TechCrunch...")
-    url = "https://techcrunch.com/"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Ошибка при получении страницы: {e}")
+def get_top_tech_news():
+    """Получает топ-10 новостей о технологиях с News API."""
+    if not NEWS_API_KEY:
+        print("Ошибка: Ключ API не найден. Убедитесь, что он установлен в secrets GitHub.")
         return []
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-    articles = soup.find_all('article', class_='post--pe-latest')
-
-    print(f"Найдено статей на странице: {len(articles)}")
-
-    if not articles:
-        articles = soup.find_all('div', class_='river-unit')
-        print(f"Попробовали альтернативный селектор. Найдено: {len(articles)}")
-    
-    if not articles:
-        print("Не удалось найти статьи на главной странице TechCrunch.")
-        return []
-
-    top_10_articles = []
-    for i, article in enumerate(articles[:10]):
-        title_element = article.find('a', class_='post-block__title__link')
-        if not title_element: continue
-
-        title = title_element.text.strip()
-        link = title_element['href']
-
-        summary_element = article.find('div', class_='post-block__content')
-        summary = summary_element.text.strip() if summary_element else 'Нет описания.'
         
-        top_10_articles.append({'title': title, 'link': link, 'summary': summary})
-        print(f"Статья #{i+1} добавлена: {title}")
+    print("Начинаем получать новости через News API...")
+    url = f"https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=10&apiKey={NEWS_API_KEY}"
     
-    return top_10_articles
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        print(f"Получено {len(data['articles'])} статей.")
+        
+        articles = []
+        for article in data['articles']:
+            title = article.get('title', 'Нет заголовка')
+            link = article.get('url', '#')
+            summary = article.get('description', 'Нет описания.')
+            articles.append({'title': title, 'link': link, 'summary': summary})
+        
+        return articles
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка при получении данных с API: {e}")
+        return []
 
 def create_markdown_file(articles, target_date=None):
     """Создает Markdown-файл с собранными данными."""
@@ -80,5 +64,5 @@ def create_markdown_file(articles, target_date=None):
     print(f"Markdown-файл успешно создан: {file_path}")
 
 if __name__ == "__main__":
-    tech_articles = scrape_techcrunch()
+    tech_articles = get_top_tech_news()
     create_markdown_file(tech_articles)

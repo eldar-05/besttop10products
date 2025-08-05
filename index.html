@@ -5,7 +5,7 @@ title: Главная
 <div class="page-content">
   <div class="wrapper">
     <h1 class="page-heading">Ежедневные новости о технологиях</h1>
-
+    
     <h2>Сегодняшний топ-10</h2>
     <div class="post-list">
       {% for post in site.posts limit: 1 %}
@@ -13,9 +13,9 @@ title: Главная
         <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
       {% endfor %}
     </div>
-
+    
     <hr>
-
+    
     <a href="{{ '/archive.html' | relative_url }}">Посмотреть архив</a>
   </div>
 </div>
