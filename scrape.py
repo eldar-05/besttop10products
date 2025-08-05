@@ -9,11 +9,10 @@ def get_top_tech_news():
     if not NEWS_API_KEY:
         print("Ошибка: Ключ API не найден. Убедитесь, что он установлен в secrets GitHub.")
         return []
-        
-    print("Начинаем получать новости через News API...")
     
     query = "startup OR innovation OR AI OR machine learning OR quantum computing OR biotechnology"
-    url = f"https://newsapi.org/v2/everything?q={query}&language=en&sortBy=publishedAt&pageSize=10&apiKey={NEWS_API_KEY}"
+    sources = "techcrunch,the-verge,ars-technica,wired,recode"
+    url = f"https://newsapi.org/v2/everything?sources={sources}&q={query}&sortBy=publishedAt&pageSize=10&apiKey={NEWS_API_KEY}"
     
     try:
         response = requests.get(url)
@@ -58,7 +57,7 @@ def create_markdown_file(articles, target_date=None):
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(f'---\n')
-        f.write(f'layout: default\n')
+        f.write(f'layout: post\n') # Используем layout: post
         f.write(f'title: "Топ-10 технологий на {formatted_date}"\n')
         f.write(f'date: {formatted_date}\n')
         f.write(f'---\n\n')
