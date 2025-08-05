@@ -2,8 +2,8 @@ name: Daily Scrape and Commit
 
 on:
   schedule:
-    - cron: '0 4 * * *' 
-  workflow_dispatch: 
+    - cron: '0 4 * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -28,5 +28,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add _posts/
-          git commit -m "Auto-scrape new articles for ${{ github.event.release.tag_name || github.ref_name || 'today' }}" || echo "No changes to commit"
+          git commit -m "Auto-scrape new articles for today" || echo "No changes to commit"
           git push
