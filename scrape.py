@@ -57,12 +57,10 @@ def create_markdown_file(articles, target_date=None):
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(f'---\n')
-        f.write(f'layout: post\n') # Используем layout: post
+        f.write(f'layout: post\n') 
         f.write(f'title: "Топ-10 технологий на {formatted_date}"\n')
         f.write(f'date: {formatted_date}\n')
         f.write(f'---\n\n')
-
-        f.write(f'# Топ-10 новых технологий на {formatted_date}\n\n')
 
         for i, article in enumerate(articles, 1):
             f.write(f'## {i}. [{article["title"]}]({article["link"]})\n\n')
