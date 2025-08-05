@@ -5,26 +5,35 @@ from datetime import date, timedelta
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
 def get_top_tech_news():
-    """Получает топ-10 новостей о технологиях с News API."""
+    """Получает топ-10 релевантных новостей о технологиях и стартапах с News API."""
     if not NEWS_API_KEY:
         print("Ошибка: Ключ API не найден. Убедитесь, что он установлен в secrets GitHub.")
         return []
         
     print("Начинаем получать новости через News API...")
-    url = f"https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=10&apiKey={NEWS_API_KEY}"
+    
+    query = "startup OR innovation OR AI OR machine learning OR quantum computing OR biotechnology"
+    url = f"https://newsapi.org/v2/everything?q={query}&language=en&sortBy=publishedAt&pageSize=10&apiKey={NEWS_API_KEY}"
     
     try:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        print(f"Получено {len(data['articles'])} статей.")
         
         articles = []
         for article in data['articles']:
-            title = article.get('title', 'Нет заголовка')
-            link = article.get('url', '#')
-            summary = article.get('description', 'Нет описания.')
+            if not article.get('title') or not article.get('url') or not article.get('description'):
+                continue
+            
+            title = article['title']
+            link = article['url']
+            summary = article['description']
             articles.append({'title': title, 'link': link, 'summary': summary})
+            
+            if len(articles) >= 10:
+                break
+        
+        print(f"Получено {len(articles)} релевантных статей.")
         
         return articles
     
