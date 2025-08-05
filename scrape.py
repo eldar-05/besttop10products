@@ -5,6 +5,7 @@ from datetime import date
 import re
 
 def scrape_habr():
+    """Собирает топ-10 новостей с Habr."""
     url = "https://habr.com/ru/feed/posts/all/"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -12,7 +13,7 @@ def scrape_habr():
 
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  
+        response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Ошибка при получении страницы: {e}")
         return []
@@ -22,11 +23,15 @@ def scrape_habr():
 
     top_10_articles = []
     for article in articles[:10]:
-        title_element = article.find('h2', class_='tm-title').find('a')
-        title = title_element.text.strip() if title_element else 'Нет заголовка'
-        link = "https://habr.com" + title_element['href'] if title_element else '#'
+        title_element = article.find('a', class_='tm-title__link')
+        
+        if not title_element:
+            continue  
 
-        summary_element = article.find('div', class_='tm-article-body tm-article-body_formatted')
+        title = title_element.text.strip()
+        link = "https://habr.com" + title_element['href']
+
+        summary_element = article.find('div', class_='article-formatted-body')
         summary = summary_element.text.strip() if summary_element else 'Нет описания.'
         summary = re.sub(r'[\r\n\t]+', ' ', summary)
         
